@@ -1060,6 +1060,16 @@ def dates(request, course_id):
         )
         request.user = masquerade_user
 
+    user_access = {
+        'is_enrolled': CourseEnrollment.is_enrolled(request.user, course_key),
+        'is_staff': has_access(request.user, 'staff', course_key),
+    }
+
+    # Render the full content to enrolled users, as well as to course and global staff.
+    # Unenrolled users who are not course or global staff are redirected to the Outline Tab.
+    if not user_access['is_enrolled'] and not user_access['is_staff']:
+        raise CourseAccessRedirect(reverse('openedx.course_experience.course_home', args=[course_id]))
+
     course_date_blocks = get_course_date_blocks(course, request.user, request,
                                                 include_access=True, include_past_dates=True)
 
