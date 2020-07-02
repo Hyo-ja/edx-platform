@@ -33,7 +33,7 @@ from xblock.fields import ScopeIds
 from bulk_email.api import is_bulk_email_feature_enabled
 from course_modes.models import CourseMode, CourseModesArchive
 from edxmako.shortcuts import render_to_response
-from instructor.toggles import use_improved_is_small_course
+from instructor.toggles import use_optimised_is_small_course
 from lms.djangoapps.certificates import api as certs_api
 from lms.djangoapps.certificates.models import (
     CertificateGenerationConfiguration,
@@ -222,7 +222,7 @@ def instructor_dashboard_2(request, course_id):
 
     if course_id == 'course-v1:HarvardX+CS50+X':
         log.info('Investigating log at %s : before Disable Button (calling is_small_course)', time.time() - start_time)
-    if use_improved_is_small_course():
+    if use_optimised_is_small_course():
         disable_buttons = not CourseEnrollment.objects.is_small_course(course_key)
     else:
         disable_buttons = not _is_small_course(course_key)
@@ -632,7 +632,7 @@ def _is_small_course(course_key):
 def _section_student_admin(course, access):
     """ Provide data for the corresponding dashboard section """
     course_key = course.id
-    if use_improved_is_small_course():
+    if use_optimised_is_small_course():
         is_small_course = CourseEnrollment.objects.is_small_course(course_key)
     else:
         is_small_course = _is_small_course(course_key)
